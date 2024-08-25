@@ -1,0 +1,18 @@
+const express = require('express'); // Framework used to build web server. HTTP request/response simplification.
+const path = require('path'); // Provides utilities for working with file and directory paths
+const fs = requier('fs'); // This module provides an API for interacting with the file system, allowing me to read and write files.
+const app = express(); // Initializes an Express session
+const PORT = process.env.PORT || 3000; // Specific port the server will listen on.
+
+
+app.use(express.json()); // Parses incoming JSON requests
+app.use(express.urlencoded({ extended: true})); // Parses URL-encoded data with extended syntax. Allows for rich object and array support.
+app.use(express.static('piblic')); // This serves static files (e.g., HTML, CSS, JS) from the public directory
+
+app.get('/api/notes', (req, res) => { // This route reads the notes stored in a db.json file and sends them back as a JSON response.
+    fs.redFile(path.join(__dirname, 'db/db.json'), 'utf8', (err, data) => { // Reads the content of the db.json file, which is assumed to contain an array of notes.
+        if (err) throw err; // Throws error if necessary
+        res.json(JSON.parse(data)); // Parses the data from the file and sends it as a JSON response
+    });
+});;
+
