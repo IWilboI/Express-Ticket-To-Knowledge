@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000; // Specific port the server will listen o
 
 app.use(express.json()); // Parses incoming JSON requests
 app.use(express.urlencoded({ extended: true})); // Parses URL-encoded data with extended syntax. Allows for rich object and array support.
-app.use(express.static('piblic')); // This serves static files (e.g., HTML, CSS, JS) from the public directory
+app.use(express.static('public')); // This serves static files (e.g., HTML, CSS, JS) from the public directory
 
 app.get('/api/notes', (req, res) => { // This route reads the notes stored in a db.json file and sends them back as a JSON response.
     fs.redFile(path.join(__dirname, 'db/db.json'), 'utf8', (err, data) => { // Reads the content of the db.json file, which is assumed to contain an array of notes.
@@ -16,3 +16,16 @@ app.get('/api/notes', (req, res) => { // This route reads the notes stored in a 
     });
 });;
 
+app.post('/api/notes', (req,res) => { // Allows user to add new notes
+    fs.readFile(path.join(__dirname, 'db/db.json'), 'utf8', (err, data) => { // Reads existing notes from 'db.json'
+        if (err) throw err; // Throws error if necessary
+        const notes = JSON.parse(data);  
+        const newNote = req.body;
+        newNote.id = Date.now().toString(); // Assigns unique ID to the new note using the current timestamp.
+        notes.push(newNote); // Adds the new note to the array of existing notes.
+        fs.writeFile(path.join(__dirname, 'db/db.json'), JSON.stringify(notes), (err) =>{ // Saves the updated array of notes back to 'db.json'.
+            if (err) throw err;
+            res.json(newNote); // Sends the new note as a JSON response.
+        });
+    });
+});
